@@ -3,3 +3,5 @@ uploads/*
 !uploads/.gitkeep
 *.ps1.tmp
 print_*.ps1
+.env
+db.json

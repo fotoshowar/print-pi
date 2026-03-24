@@ -2,254 +2,223 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>🖨️ Imprimir Fotos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>🖨️ Print Server</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f2f5; color: #333; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
 
     header {
-      background: #2563eb;
+      background: linear-gradient(135deg, #1e40af, #7c3aed);
       color: white;
-      padding: 16px 20px;
+      padding: 14px 20px;
       display: flex;
       align-items: center;
-      gap: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      justify-content: space-between;
       position: sticky;
       top: 0;
       z-index: 100;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
     }
-    header h1 { font-size: 1.2rem; }
+    .header-left { display: flex; align-items: center; gap: 8px; }
+    header h1 { font-size: 1.1rem; font-weight: 700; }
+    .stats-bar { font-size: 0.75rem; opacity: 0.8; }
 
-    .container { max-width: 600px; margin: 0 auto; padding: 16px; }
+    .container { max-width: 600px; margin: 0 auto; padding: 12px; }
 
     /* Upload Zone */
     .upload-zone {
-      background: white;
-      border: 2px dashed #2563eb;
+      background: #1e293b;
+      border: 2px dashed #3b82f6;
       border-radius: 16px;
-      padding: 32px 16px;
+      padding: 24px 16px;
       text-align: center;
       cursor: pointer;
       transition: all 0.2s;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
-    .upload-zone:hover, .upload-zone.drag-over {
-      background: #eff6ff;
-      border-color: #1d4ed8;
-    }
-    .upload-zone .icon { font-size: 3rem; margin-bottom: 8px; }
-    .upload-zone p { color: #6b7280; font-size: 0.9rem; }
+    .upload-zone:hover, .upload-zone.drag-over { background: #1e3a5f; border-color: #60a5fa; }
+    .upload-zone .icon { font-size: 2.5rem; margin-bottom: 4px; }
+    .upload-zone p { color: #94a3b8; font-size: 0.85rem; }
     .upload-zone input[type="file"] { display: none; }
     .upload-btn {
-      display: inline-block;
-      background: #2563eb;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 12px 28px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 12px;
-      transition: background 0.2s;
+      display: inline-block; background: #3b82f6; color: white; border: none;
+      border-radius: 10px; padding: 12px 28px; font-size: 1rem; font-weight: 700;
+      cursor: pointer; margin-top: 10px; transition: background 0.2s;
     }
-    .upload-btn:hover { background: #1d4ed8; }
+    .upload-btn:hover { background: #2563eb; }
 
     /* Progress */
-    .upload-progress {
-      display: none;
-      background: white;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 16px;
-    }
-    .progress-bar {
-      height: 8px;
-      background: #e5e7eb;
-      border-radius: 4px;
-      overflow: hidden;
-      margin-top: 8px;
-    }
-    .progress-fill {
-      height: 100%;
-      background: #2563eb;
-      border-radius: 4px;
-      transition: width 0.3s;
-      width: 0%;
+    .upload-progress { display: none; background: #1e293b; border-radius: 12px; padding: 12px 16px; margin-bottom: 12px; }
+    .progress-bar { height: 6px; background: #334155; border-radius: 3px; overflow: hidden; margin-top: 6px; }
+    .progress-fill { height: 100%; background: #3b82f6; border-radius: 3px; transition: width 0.3s; width: 0%; }
+
+    /* Counter */
+    .photo-count {
+      font-size: 0.85rem; color: #94a3b8; margin-bottom: 10px;
+      display: flex; align-items: center; justify-content: space-between;
     }
 
-    /* Galeria */
-    .section-title {
-      font-size: 1rem;
-      font-weight: 700;
-      color: #374151;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .photo-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin-bottom: 16px;
-    }
+    /* Grid */
+    .photo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
 
     .photo-card {
-      background: white;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-      transition: transform 0.2s, box-shadow 0.2s;
+      background: #1e293b; border-radius: 12px; overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: transform 0.2s;
     }
-    .photo-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    .photo-card:hover { transform: translateY(-2px); }
+    .photo-card img { width: 100%; height: 150px; object-fit: cover; display: block; cursor: pointer; }
 
-    .photo-card img {
-      width: 100%;
-      height: 160px;
-      object-fit: cover;
-      display: block;
-      cursor: pointer;
-    }
-
-    .photo-card .actions {
-      padding: 10px;
-      display: flex;
-      gap: 6px;
-    }
+    .photo-card .actions { padding: 8px; display: flex; flex-direction: column; gap: 4px; }
+    .photo-card .actions .row { display: flex; gap: 4px; }
 
     .btn {
-      flex: 1;
-      padding: 8px 4px;
-      border: none;
-      border-radius: 8px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
+      flex: 1; padding: 8px 4px; border: none; border-radius: 8px;
+      font-size: 0.72rem; font-weight: 700; cursor: pointer; transition: all 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 3px;
     }
     .btn-a4 { background: #2563eb; color: white; }
     .btn-a4:hover { background: #1d4ed8; }
-    .btn-10x15 { background: #7c3aed; color: white; }
-    .btn-10x15:hover { background: #6d28d9; }
-    .btn-delete { background: #fee2e2; color: #dc2626; flex: 0; padding: 8px 10px; }
-    .btn-delete:hover { background: #fecaca; }
+    .btn-a5 { background: #7c3aed; color: white; }
+    .btn-a5:hover { background: #6d28d9; }
+    .btn-share { background: #059669; color: white; }
+    .btn-share:hover { background: #047857; }
+    .btn-delete { background: #991b1b; color: #fca5a5; flex: 0; padding: 8px 10px; }
+    .btn-delete:hover { background: #7f1d1d; }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* Modal imagen grande */
+    /* Share Modal */
     .modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.9);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+      z-index: 1000; align-items: center; justify-content: center; padding: 20px;
     }
     .modal.open { display: flex; }
-    .modal img { max-width: 100%; max-height: 80vh; border-radius: 8px; object-fit: contain; }
-    .modal-close {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      background: white;
-      border: none;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      font-size: 1.2rem;
+    .modal-content {
+      background: #1e293b; border-radius: 20px; padding: 24px;
+      max-width: 360px; width: 100%; text-align: center;
+    }
+    .modal-content img.preview { width: 100%; max-height: 200px; object-fit: contain; border-radius: 10px; margin: 12px 0; }
+    .modal-content img.qr { width: 180px; height: 180px; border-radius: 8px; margin: 12px auto; background: white; padding: 8px; }
+    .modal-content h3 { font-size: 1.1rem; margin-bottom: 8px; }
+    .modal-content p { color: #94a3b8; font-size: 0.85rem; margin-bottom: 8px; }
+    .share-code {
+      font-size: 1.8rem; font-weight: 900; color: #60a5fa; letter-spacing: 4px;
+      background: #0f172a; padding: 10px 16px; border-radius: 10px; margin: 8px 0;
+      font-family: monospace;
+    }
+    .share-url {
+      font-size: 0.75rem; color: #64748b; word-break: break-all;
+      background: #0f172a; padding: 8px 12px; border-radius: 8px; margin: 8px 0;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    }
+    .share-url:hover { color: #94a3b8; }
+    .modal-close {
+      background: #334155; color: white; border: none; border-radius: 10px;
+      padding: 10px 24px; font-size: 0.9rem; cursor: pointer; margin-top: 12px;
+      font-weight: 600;
+    }
+
+    /* Image preview modal */
+    .preview-modal {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+      z-index: 1001; align-items: center; justify-content: center; padding: 16px;
+    }
+    .preview-modal.open { display: flex; }
+    .preview-modal img { max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 8px; }
+    .preview-close {
+      position: absolute; top: 12px; right: 12px; background: rgba(255,255,255,0.2);
+      border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 1.3rem;
+      cursor: pointer; color: white; display: flex; align-items: center; justify-content: center;
     }
 
     /* Toast */
     .toast {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: #1f2937;
-      color: white;
-      padding: 12px 20px;
-      border-radius: 10px;
-      font-size: 0.9rem;
-      transition: transform 0.3s;
-      z-index: 2000;
-      max-width: 300px;
-      text-align: center;
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px);
+      background: #1e293b; color: white; padding: 12px 20px; border-radius: 10px;
+      font-size: 0.9rem; transition: transform 0.3s; z-index: 2000; max-width: 320px;
+      text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
     }
     .toast.show { transform: translateX(-50%) translateY(0); }
-    .toast.success { background: #059669; }
-    .toast.error { background: #dc2626; }
+    .toast.success { background: #065f46; }
+    .toast.error { background: #991b1b; }
 
-    .empty-state {
-      text-align: center;
-      padding: 40px 16px;
-      color: #9ca3af;
-    }
+    .empty-state { text-align: center; padding: 40px 16px; color: #64748b; grid-column: 1/-1; }
     .empty-state .icon { font-size: 3rem; margin-bottom: 8px; }
 
     .spinner {
-      display: inline-block;
-      width: 14px;
-      height: 14px;
-      border: 2px solid rgba(255,255,255,0.4);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
+      display: inline-block; width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3); border-top-color: white;
+      border-radius: 50%; animation: spin 0.7s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    .badge {
+      font-size: 0.6rem; background: rgba(255,255,255,0.15); padding: 2px 5px;
+      border-radius: 4px; color: #94a3b8;
+    }
   </style>
 </head>
 <body>
 
 <header>
-  <span>🖨️</span>
-  <h1>Imprimir Fotos</h1>
+  <div class="header-left">
+    <span>🖨️</span>
+    <div>
+      <h1>Print Server</h1>
+      <div class="stats-bar" id="statsBar">📸 0 fotos</div>
+    </div>
+  </div>
 </header>
 
 <div class="container">
-
-  <!-- Upload Zone -->
-  <div class="upload-zone" id="uploadZone">
+  <!-- Upload -->
+  <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
     <div class="icon">📸</div>
     <p>Toca para seleccionar fotos</p>
-    <p style="font-size:0.8rem;margin-top:4px;">JPG, PNG — máx 20MB</p>
-    <input type="file" id="fileInput" accept="image/*" multiple>
-    <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+    <input type="file" id="fileInput" accept="image/*" multiple capture="environment">
+    <button class="upload-btn" onclick="event.stopPropagation(); document.getElementById('fileInput').click()">
       Seleccionar Fotos
     </button>
   </div>
 
-  <!-- Progreso -->
   <div class="upload-progress" id="uploadProgress">
-    <p id="progressText">Subiendo foto...</p>
-    <div class="progress-bar">
-      <div class="progress-fill" id="progressFill"></div>
-    </div>
+    <p id="progressText" style="font-size:0.85rem;">Subiendo...</p>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
   </div>
 
-  <!-- Galeria -->
-  <div class="section-title">🖼️ Fotos Cargadas</div>
+  <!-- Counter -->
+  <div class="photo-count">
+    <span id="photoCount">🖼️ 0 fotos</span>
+    <span id="printCount" class="badge"></span>
+  </div>
+
+  <!-- Grid -->
   <div class="photo-grid" id="photoGrid">
-    <div class="empty-state" style="grid-column:1/-1">
+    <div class="empty-state">
       <div class="icon">📂</div>
-      <p>No hay fotos aún.<br>Sube una para empezar.</p>
+      <p>No hay fotos aun.<br>Sube una para empezar.</p>
     </div>
   </div>
-
 </div>
 
-<!-- Modal -->
-<div class="modal" id="modal" onclick="closeModal()">
-  <button class="modal-close">✕</button>
-  <img id="modalImg" src="" alt="">
+<!-- Share Modal -->
+<div class="modal" id="shareModal">
+  <div class="modal-content">
+    <h3>📤 Compartir Foto</h3>
+    <img class="preview" id="sharePreview" src="" alt="">
+    <p>Codigo de descarga:</p>
+    <div class="share-code" id="shareCode">------</div>
+    <img class="qr" id="shareQR" src="" alt="QR">
+    <div class="share-url" id="shareURL" onclick="copyURL()">Toca para copiar link</div>
+    <p style="font-size:0.75rem;color:#64748b;">El cliente escanea el QR o entra al link para descargar</p>
+    <button class="modal-close" onclick="closeShareModal()">Cerrar</button>
+  </div>
+</div>
+
+<!-- Preview Modal -->
+<div class="preview-modal" id="previewModal" onclick="closePreview()">
+  <button class="preview-close">✕</button>
+  <img id="previewImg" src="" alt="">
 </div>
 
 <!-- Toast -->
@@ -257,176 +226,179 @@
 
 <script>
   let photos = [];
+  let currentShareURL = '';
 
   // ======== Upload ========
   const fileInput = document.getElementById('fileInput');
-  const uploadZone = document.getElementById('uploadZone');
-
   fileInput.addEventListener('change', (e) => {
     const files = Array.from(e.target.files);
-    files.forEach(uploadPhoto);
+    if (files.length > 0) uploadPhotos(files);
     fileInput.value = '';
   });
 
-  // Drag & Drop
-  uploadZone.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    uploadZone.classList.add('drag-over');
-  });
+  // Drag & drop
+  const uploadZone = document.getElementById('uploadZone');
+  uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
   uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
   uploadZone.addEventListener('drop', (e) => {
     e.preventDefault();
     uploadZone.classList.remove('drag-over');
     const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
-    files.forEach(uploadPhoto);
+    if (files.length > 0) uploadPhotos(files);
   });
 
-  async function uploadPhoto(file) {
+  async function uploadPhotos(files) {
     const progressEl = document.getElementById('uploadProgress');
     const progressFill = document.getElementById('progressFill');
     const progressText = document.getElementById('progressText');
 
     progressEl.style.display = 'block';
-    progressText.textContent = `Subiendo ${file.name}...`;
-    progressFill.style.width = '0%';
+    progressText.textContent = `Subiendo ${files.length} foto(s)...`;
+    progressFill.style.width = '10%';
 
     const formData = new FormData();
-    formData.append('photo', file);
+    files.forEach(f => formData.append('photos', f));
 
     try {
-      // Simular progreso
-      let progress = 0;
+      let progress = 10;
       const interval = setInterval(() => {
-        progress = Math.min(progress + 20, 90);
+        progress = Math.min(progress + 15, 90);
         progressFill.style.width = progress + '%';
-      }, 100);
+      }, 200);
 
       const res = await fetch('/api/upload', { method: 'POST', body: formData });
       clearInterval(interval);
       progressFill.style.width = '100%';
 
-      if (!res.ok) throw new Error('Error al subir');
-
-      const data = await res.json();
-      showToast('✅ Foto subida!', 'success');
-
-      setTimeout(() => {
-        progressEl.style.display = 'none';
-        loadPhotos();
-      }, 500);
-
+      if (!res.ok) throw new Error('Error');
+      showToast(`✅ ${files.length} foto(s) subida(s)!`, 'success');
+      setTimeout(() => { progressEl.style.display = 'none'; loadPhotos(); }, 500);
     } catch (err) {
       progressEl.style.display = 'none';
-      showToast('❌ Error al subir la foto', 'error');
+      showToast('❌ Error al subir', 'error');
     }
   }
 
-  // ======== Cargar fotos ========
+  // ======== Load ========
   async function loadPhotos() {
     try {
       const res = await fetch('/api/photos');
       photos = await res.json();
       renderPhotos();
-    } catch (err) {
-      console.error('Error cargando fotos:', err);
-    }
+      updateStats();
+    } catch (err) { console.error(err); }
   }
 
   function renderPhotos() {
     const grid = document.getElementById('photoGrid');
+    document.getElementById('photoCount').textContent = `🖼️ ${photos.length} foto(s)`;
 
     if (photos.length === 0) {
-      grid.innerHTML = `
-        <div class="empty-state" style="grid-column:1/-1">
-          <div class="icon">📂</div>
-          <p>No hay fotos aún.<br>Sube una para empezar.</p>
-        </div>`;
+      grid.innerHTML = '<div class="empty-state"><div class="icon">📂</div><p>No hay fotos aun.<br>Sube una para empezar.</p></div>';
       return;
     }
 
-    grid.innerHTML = photos.map(photo => `
-      <div class="photo-card" id="card-${photo.filename}">
-        <img src="${photo.path}?t=${Date.now()}" alt="Foto"
-             onclick="openModal('${photo.path}')">
+    grid.innerHTML = photos.map(p => `
+      <div class="photo-card">
+        <img src="/uploads/${p.filename}?t=${Date.now()}" alt="Foto" onclick="openPreview('/uploads/${p.filename}')">
         <div class="actions">
-          <button class="btn btn-a4" onclick="printPhoto('${photo.filename}', 'A4', this)">
-            🖨️ A4
-          </button>
-          <button class="btn btn-10x15" onclick="printPhoto('${photo.filename}', '10x15', this)">
-            📷 10×15
-          </button>
-          <button class="btn btn-delete" onclick="deletePhoto('${photo.filename}')">
-            🗑️
-          </button>
+          <div class="row">
+            <button class="btn btn-a4" onclick="printPhoto('${p.filename}', 'A4', this)">🖨️ A4</button>
+            <button class="btn btn-a5" onclick="printPhoto('${p.filename}', 'A5', this)">📄 A5</button>
+          </div>
+          <div class="row">
+            <button class="btn btn-share" onclick="sharePhoto('${p.filename}')">📤 Compartir</button>
+            <button class="btn btn-delete" onclick="deletePhoto('${p.filename}')">🗑️</button>
+          </div>
         </div>
       </div>
     `).join('');
   }
 
-  // ======== Imprimir ========
+  async function updateStats() {
+    try {
+      const res = await fetch('/api/stats');
+      const stats = await res.json();
+      document.getElementById('printCount').textContent = `🖨️ ${stats.totalPrinted} impresas | ⬇️ ${stats.totalDownloaded} descargas`;
+    } catch(e) {}
+  }
+
+  // ======== Print ========
   async function printPhoto(filename, size, btn) {
-    const originalText = btn.innerHTML;
+    const orig = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span>';
-
     try {
       const res = await fetch('/api/print', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ filename, size, printer: 'EPSON L805 Series' })
       });
-
       const data = await res.json();
-
       if (data.success) {
-        showToast(`✅ Enviado a imprimir en ${size}!`, 'success');
-      } else {
-        showToast('❌ Error al imprimir', 'error');
-      }
-    } catch (err) {
-      showToast('❌ Error de conexión', 'error');
-    } finally {
-      btn.disabled = false;
-      btn.innerHTML = originalText;
-    }
+        showToast(`✅ Enviada a imprimir en ${size}!`, 'success');
+        updateStats();
+      } else showToast('❌ Error al imprimir', 'error');
+    } catch (err) { showToast('❌ Error de conexion', 'error'); }
+    finally { btn.disabled = false; btn.innerHTML = orig; }
   }
 
-  // ======== Eliminar ========
-  async function deletePhoto(filename) {
-    if (!confirm('¿Eliminar esta foto?')) return;
-
+  // ======== Share ========
+  async function sharePhoto(filename) {
     try {
-      const res = await fetch(`/api/photos/${filename}`, { method: 'DELETE' });
-      if (res.ok) {
-        showToast('🗑️ Foto eliminada', '');
-        loadPhotos();
-      }
-    } catch (err) {
-      showToast('❌ Error al eliminar', 'error');
-    }
+      const res = await fetch(`/api/share/${filename}`);
+      const data = await res.json();
+      document.getElementById('shareCode').textContent = data.shareCode;
+      document.getElementById('shareQR').src = data.qrURL;
+      document.getElementById('sharePreview').src = `/uploads/${filename}`;
+      document.getElementById('shareURL').textContent = data.shareURL;
+      currentShareURL = data.shareURL;
+      document.getElementById('shareModal').classList.add('open');
+    } catch (err) { showToast('❌ Error al compartir', 'error'); }
   }
 
-  // ======== Modal ========
-  function openModal(src) {
-    document.getElementById('modalImg').src = src;
-    document.getElementById('modal').classList.add('open');
+  function closeShareModal() { document.getElementById('shareModal').classList.remove('open'); }
+
+  function copyURL() {
+    navigator.clipboard.writeText(currentShareURL).then(() => {
+      showToast('📋 Link copiado!', 'success');
+    }).catch(() => {
+      // Fallback
+      const el = document.createElement('textarea');
+      el.value = currentShareURL;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      showToast('📋 Link copiado!', 'success');
+    });
   }
 
-  function closeModal() {
-    document.getElementById('modal').classList.remove('open');
+  // ======== Delete ========
+  async function deletePhoto(filename) {
+    if (!confirm('Eliminar esta foto?')) return;
+    try {
+      await fetch(`/api/photos/${filename}`, { method: 'DELETE' });
+      showToast('🗑️ Eliminada', '');
+      loadPhotos();
+    } catch (err) { showToast('❌ Error', 'error'); }
   }
+
+  // ======== Preview ========
+  function openPreview(src) { document.getElementById('previewImg').src = src; document.getElementById('previewModal').classList.add('open'); }
+  function closePreview() { document.getElementById('previewModal').classList.remove('open'); }
 
   // ======== Toast ========
   function showToast(msg, type) {
-    const toast = document.getElementById('toast');
-    toast.textContent = msg;
-    toast.className = 'toast show ' + (type || '');
-    setTimeout(() => toast.classList.remove('show'), 3000);
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show ' + (type || '');
+    setTimeout(() => t.classList.remove('show'), 3000);
   }
 
-  // Cargar al inicio
+  // Init
   loadPhotos();
-  setInterval(loadPhotos, 10000); // Actualizar cada 10 segundos
+  setInterval(loadPhotos, 15000);
 </script>
 
 </body>
