@@ -22,7 +22,7 @@ Sistema de impresión de fotos para eventos con acceso web local y opcionalmente
 
 ### Opción rápida (una sola línea)
 ```bash
-curl -sSL https://raw.githubusercontent.com/fotoshowar/print-pi/main/install.sh | sudo bash
+git clone https://github.com/fotoshowar/print-pi.git && cd print-pi && sudo bash install.sh
 ```
 
 ### Opción con clon (manual)
