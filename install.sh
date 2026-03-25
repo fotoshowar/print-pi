@@ -54,18 +54,26 @@ usermod -aG lpadmin "$APP_USER" 2>/dev/null || true
 echo -e "${GREEN}[5/7]${NC} Instalando aplicación en $APP_DIR..."
 mkdir -p "$APP_DIR"
 
-# Copiar archivos
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 if [ -f "$SCRIPT_DIR/server.js" ]; then
+  # Copiar archivos desde directorio local
   echo "  Copiando archivos..."
   cp "$SCRIPT_DIR/server.js" "$APP_DIR/"
   cp "$SCRIPT_DIR/package.json" "$APP_DIR/"
   cp "$SCRIPT_DIR/package-lock.json" "$APP_DIR/" 2>/dev/null || true
   cp -r "$SCRIPT_DIR/public" "$APP_DIR/"
 else
-  echo -e "${RED}No se encontraron archivos del servidor.${NC}"
-  exit 1
+  # Descargar desde GitHub (cuando se ejecuta via curl one-liner)
+  echo "  Descargando desde GitHub..."
+  cd /tmp
+  rm -rf print-pi
+  git clone https://github.com/fotoshowar/print-pi.git > /dev/null 2>&1
+  cp print-pi/server.js "$APP_DIR/"
+  cp print-pi/package.json "$APP_DIR/"
+  cp print-pi/package-lock.json "$APP_DIR/" 2>/dev/null || true
+  cp -r print-pi/public "$APP_DIR/"
+  rm -rf print-pi
 fi
 
 # Crear directorios
